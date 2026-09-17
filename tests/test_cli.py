@@ -112,3 +112,27 @@ def test_cli_keyboard_interrupt():
         result = runner.invoke(app, ["scan", "127.0.0.1", "-p", "80"])
         assert result.exit_code == 130
         assert "Scan cancelled by user" in result.output
+
+
+def test_cli_key_argument(tmp_path: Path):
+    output_report = tmp_path / "key_report.md"
+    with patch("ctf_recon.cli.run_ai_advisor", return_value=None) as mock_advisor:
+        result = runner.invoke(
+            app,
+            [
+                "scan",
+                "127.0.0.1",
+                "-p",
+                "54321",
+                "-k",
+                "custom_secret_key_999",
+                "--timeout",
+                "0.2",
+                "-o",
+                str(output_report),
+            ],
+        )
+        assert result.exit_code == 0
+        assert mock_advisor.called
+        assert mock_advisor.call_args[1]["api_key"] == "custom_secret_key_999"
+

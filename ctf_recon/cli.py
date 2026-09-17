@@ -45,6 +45,7 @@ async def _execute_scan(
     model: str,
     output: str,
     timeout: float,
+    api_key: Optional[str] = None,
 ) -> TriageReport:
     """Core asynchronous scan pipeline."""
     ports_to_scan = parse_ports(ports_arg)
@@ -163,6 +164,7 @@ async def _execute_scan(
                 open_ports=open_ports,
                 web_findings=web_findings,
                 flags_found=flags_found,
+                api_key=api_key,
                 enable_ai=True,
                 model_name=model,
             )
@@ -238,6 +240,14 @@ def scan(
         "--ai",
         help="Enable tactical analysis assisted by Google Gemini"
     ),
+    key: Optional[str] = typer.Option(
+        None,
+        "-k",
+        "--key",
+        "--api-key",
+        help="Google Gemini API key (can also be set via GEMINI_API_KEY environment variable)",
+        envvar="GEMINI_API_KEY",
+    ),
     model: str = typer.Option(
         "gemini-2.5-flash",
         "-m",
@@ -259,6 +269,10 @@ def scan(
     """
     Scans a target for open ports, web endpoints, CTF flags, and AI triage recommendations.
     """
+    # If the user explicitly provided an API key flag, activate AI analysis automatically
+    if key and not ai:
+        ai = True
+
     try:
         try:
             loop = asyncio.get_running_loop()
@@ -277,6 +291,7 @@ def scan(
                             model=model,
                             output=output,
                             timeout=timeout,
+                            api_key=key,
                         )
                     )
                 ).result()
@@ -289,6 +304,7 @@ def scan(
                     model=model,
                     output=output,
                     timeout=timeout,
+                    api_key=key,
                 )
             )
     except KeyboardInterrupt:

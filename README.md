@@ -90,6 +90,10 @@ ctf-recon scan 10.10.10.10 -p 22,80,8000-8020
 # Usando el modelo por defecto (gemini-2.5-flash)
 ctf-recon scan 10.10.10.10 --ai
 
+# Pasando la API Key como argumento en la llamada
+ctf-recon scan 10.10.10.10 -k "tu_gemini_api_key"
+ctf-recon scan 10.10.10.10 --key "tu_gemini_api_key" --model gemini-1.5-pro
+
 # Especificando un modelo personalizado de Gemini
 ctf-recon scan 10.10.10.10 --ai -m gemini-1.5-pro
 ctf-recon scan 10.10.10.10 --ai --model gemini-2.0-flash
@@ -120,6 +124,7 @@ ctf-recon scan --help
 | `TARGET` | — | IP o dominio del reto objetivo (requerido) | — |
 | `--ports` | `-p` | Rango o lista de puertos a escanear | Top 100 comunes |
 | `--ai` | — | Activa el análisis táctico asistido por Gemini | `False` |
+| `--key` | `-k`, `--api-key` | Clave de API de Google Gemini (o variable `GEMINI_API_KEY`) | `None` |
 | `--model` | `-m` | Modelo de Gemini para el análisis | `gemini-2.5-flash` |
 | `--output` | `-o` | Ruta del archivo Markdown de salida | `writeup_triage.md` |
 | `--timeout` | — | Timeout por puerto/petición en segundos | `1.5` |

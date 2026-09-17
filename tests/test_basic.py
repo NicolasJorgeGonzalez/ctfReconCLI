@@ -19,6 +19,8 @@ def test_cli_model_argument():
     assert result.exit_code == 0
     assert "--model" in result.output
     assert "-m" in result.output
+    assert "--key" in result.output
+    assert "-k" in result.output
     assert "gemini-2.5-flash" in result.output
 
     # Test passing custom model via --model

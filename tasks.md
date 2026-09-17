@@ -66,6 +66,7 @@ This task list details the step-by-step implementation plan for building the `ct
   - `-p, --ports` (default: `1-1000` or common top ports)
   - `--ai` (flag boolean)
   - `-m, --model` (default: `gemini-2.5-flash`)
+  - `-k, --key` (Gemini API key or `GEMINI_API_KEY` env)
   - `-o, --output` (default: `writeup_triage.md`)
   - `--timeout` (float, default: `1.5`)
 - [x] Implement Rich UI components: spinners during port scan & web triage, formatted Rich tables for output, colorful alert panels for flags.
