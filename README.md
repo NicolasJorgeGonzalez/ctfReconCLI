@@ -12,7 +12,7 @@ Realiza escaneo veloz de puertos TCP, triage superficial de aplicaciones web, de
 - **🌐 Triage Web Automático:** Para puertos HTTP/HTTPS detectados, inspecciona la raíz (`/`) y rutas clave como `/robots.txt` y `/.git/HEAD`, recolectando cabeceras diagnósticas (`Server`, `X-Powered-By`), códigos de estado y cadenas de redirección.
 - **🚩 Motor de Detección de Banderas y Blobs:** Búsqueda mediante expresiones regulares de banderas en formatos estándar (`FaMAF{...}`, `HTB{...}`, `THM{...}`, `flag{...}`, `picoCTF{...}`) y detección/decodificación segura de blobs Base64 en banners y respuestas HTTP.
 - **🤖 Asesor Táctico con IA (Google Gemini):** Análisis asistido con el SDK oficial `google-genai` que genera reportes estructurados con Pydantic: evaluación de criticidad de servicios, CVEs probables, comandos de consola sugeridos a continuación y vectores de ataque recomendados.
-- **🎛️ Selección Dinámica de Modelos:** Posibilidad de elegir el modelo de Gemini a través del flag `-m` / `--model` (por defecto: `gemini-2.5-flash`).
+- **🎛️ Selección Dinámica de Modelos:** Posibilidad de elegir el modelo de Gemini a través del flag `-m` / `--model` (por defecto: `gemini-3.6-flash`).
 - **🔌 100% Funcional Offline:** Si no se utiliza el flag `--ai`, la herramienta opera completamente desconectada sin requerir `GEMINI_API_KEY` ni conexión externa a Google.
 - **📝 Exportación a Markdown:** Genera automáticamente un writeup estructurado en Markdown (`writeup_triage.md`) listo para documentar retos o reportar auditorías.
 - **🎨 Interfaz de Terminal Moderna:** Construida con `typer` y `rich` con spinners de progreso, tablas formateadas y paneles de alerta destacados al encontrar banderas.
@@ -55,23 +55,28 @@ Una vez instalado, el comando `ctf-recon` estará disponible directamente en tu 
 
 ## 🔑 Configuración de Gemini (Opcional)
 
-Si deseas utilizar el análisis táctico con IA, define tu clave de API como variable de entorno:
+Si deseas utilizar el análisis táctico asistido por IA, define tu clave de API como variable de entorno. Esta es la **forma recomendada** para no exponer tu clave en el historial de comandos ni en la lista de procesos:
 
 ```bash
 export GEMINI_API_KEY="tu_api_key_aqui"
 ```
 
-> **Nota:** Puedes obtener una API key gratuita en [Google AI Studio](https://aistudio.google.com/).
+> [!TIP]
+> Puedes obtener una API key gratuita en [Google AI Studio](https://aistudio.google.com/). La herramienta está optimizada para la **Gemini Developer API** utilizando esquemas estructurados nativos con Pydantic.
 
 ---
 
 ## 📖 Modo de Uso
 
 ### Comando Básico
-Escanear un objetivo (los 100 puertos CTF más comunes por defecto):
+Escanear un objetivo (IP válida o dominio, revisando los 100 puertos CTF más comunes por defecto):
 ```bash
 ctf-recon scan 10.10.10.10
+# o con un dominio/IP externa:
+ctf-recon scan 208.113.208.13
 ```
+> [!NOTE]
+> Asegúrate de ingresar las IPs con formato estándar de puntos (por ejemplo `208.113.208.13`), no con guiones.
 
 ### Escaneo con Rango o Lista de Puertos
 ```bash
@@ -87,16 +92,15 @@ ctf-recon scan 10.10.10.10 -p 22,80,8000-8020
 
 ### Escaneo Asistido con Inteligencia Artificial
 ```bash
-# Usando el modelo por defecto (gemini-2.5-flash)
+# Con la variable GEMINI_API_KEY ya configurada (Recomendado)
 ctf-recon scan 10.10.10.10 --ai
 
-# Pasando la API Key como argumento en la llamada
+# Pasando la API Key directamente por consola (activa --ai automáticamente)
 ctf-recon scan 10.10.10.10 -k "tu_gemini_api_key"
-ctf-recon scan 10.10.10.10 --key "tu_gemini_api_key" --model gemini-1.5-pro
 
 # Especificando un modelo personalizado de Gemini
-ctf-recon scan 10.10.10.10 --ai -m gemini-1.5-pro
-ctf-recon scan 10.10.10.10 --ai --model gemini-2.0-flash
+ctf-recon scan 10.10.10.10 --ai -m gemini-3.6-flash
+ctf-recon scan 10.10.10.10 --ai --model gemini-1.5-pro
 ```
 
 ### Exportar el Reporte a un Archivo Específico
@@ -125,7 +129,7 @@ ctf-recon scan --help
 | `--ports` | `-p` | Rango o lista de puertos a escanear | Top 100 comunes |
 | `--ai` | — | Activa el análisis táctico asistido por Gemini | `False` |
 | `--key` | `-k`, `--api-key` | Clave de API de Google Gemini (o variable `GEMINI_API_KEY`) | `None` |
-| `--model` | `-m` | Modelo de Gemini para el análisis | `gemini-2.5-flash` |
+| `--model` | `-m` | Modelo de Gemini para el análisis | `gemini-3.6-flash` |
 | `--output` | `-o` | Ruta del archivo Markdown de salida | `writeup_triage.md` |
 | `--timeout` | — | Timeout por puerto/petición en segundos | `1.5` |
 | `--help` | — | Muestra la ayuda y sale | — |

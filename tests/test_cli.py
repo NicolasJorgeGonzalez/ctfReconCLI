@@ -81,7 +81,7 @@ def test_cli_scan_full_pipeline_with_mock_services(tmp_path: Path):
                     str(port),
                     "--ai",
                     "-m",
-                    "gemini-2.5-flash",
+                    "gemini-3.6-flash",
                     "--timeout",
                     "1.0",
                     "-o",

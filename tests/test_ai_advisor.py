@@ -104,3 +104,34 @@ def test_analyze_exception_graceful_handling():
         flags_found=[],
     )
     assert res is None
+
+
+def test_analyze_with_gemini_list_format():
+    advisor = AIAdvisor(api_key="mock_key")
+    mock_client = MagicMock()
+    mock_response = MagicMock()
+    mock_response.text = json.dumps({
+        "probable_cves": ["CVE-2023-1234"],
+        "service_criticality": [
+            {"service": "port 80", "criticality": "Critical"},
+            {"service": "port 443", "criticality": "Medium"}
+        ],
+        "suggested_cli_commands": ["nikto -h http://10.10.10.10"],
+        "attack_vectors": ["SQLi in login parameter"]
+    })
+    mock_client.models.generate_content.return_value = mock_response
+    advisor.client = mock_client
+
+    res = advisor.analyze(
+        target="10.10.10.10",
+        open_ports=[PortScanResult(port=80)],
+        web_findings=[],
+        flags_found=[],
+    )
+
+    assert isinstance(res, AIAnalysisResult)
+    assert res.probable_cves == ["CVE-2023-1234"]
+    assert res.service_criticality == {"port 80": "Critical", "port 443": "Medium"}
+    assert res.suggested_cli_commands == ["nikto -h http://10.10.10.10"]
+    assert res.attack_vectors == ["SQLi in login parameter"]
+

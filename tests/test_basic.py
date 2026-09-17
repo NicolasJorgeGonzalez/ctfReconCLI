@@ -21,7 +21,7 @@ def test_cli_model_argument():
     assert "-m" in result.output
     assert "--key" in result.output
     assert "-k" in result.output
-    assert "gemini-2.5-flash" in result.output
+    assert "gemini-3.6-flash" in result.output
 
     # Test passing custom model via --model
     result2 = runner.invoke(app, ["scan", "127.0.0.1", "--ai", "--model", "gemini-1.5-pro"])

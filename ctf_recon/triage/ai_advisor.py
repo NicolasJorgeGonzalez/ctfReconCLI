@@ -3,6 +3,8 @@ import logging
 import os
 from typing import List, Optional
 
+from pydantic import BaseModel, Field
+
 from ctf_recon.models import (
     AIAnalysisResult,
     FlagFinding,
@@ -12,7 +14,31 @@ from ctf_recon.models import (
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.6-flash"
+
+
+class ServiceCriticalityItem(BaseModel):
+    service: str = Field(description="Service name or port, e.g. 'port 80'")
+    criticality: str = Field(description="Criticality level: 'Critical', 'High', 'Medium', 'Low'")
+
+
+class GeminiAnalysisSchema(BaseModel):
+    probable_cves: List[str] = Field(
+        default_factory=list,
+        description="Probable CVEs or known software vulnerabilities.",
+    )
+    service_criticality: List[ServiceCriticalityItem] = Field(
+        default_factory=list,
+        description="List of services and their criticality assessment.",
+    )
+    suggested_cli_commands: List[str] = Field(
+        default_factory=list,
+        description="Suggested CLI commands to run next.",
+    )
+    attack_vectors: List[str] = Field(
+        default_factory=list,
+        description="Promising attack vectors or testing angles to explore.",
+    )
 
 
 class AIAdvisor:
@@ -115,12 +141,35 @@ class AIAdvisor:
                 contents=prompt,
                 config=types.GenerateContentConfig(
                     response_mime_type="application/json",
-                    response_schema=AIAnalysisResult,
+                    response_schema=GeminiAnalysisSchema,
+                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
                 ),
             )
 
             if response and response.text:
-                return AIAnalysisResult.model_validate_json(response.text)
+                try:
+                    data = json.loads(response.text)
+                except Exception:
+                    return None
+
+                crit_data = data.get("service_criticality", [])
+                crit_dict = {}
+                if isinstance(crit_data, list):
+                    for item in crit_data:
+                        if isinstance(item, dict):
+                            svc = item.get("service")
+                            crit = item.get("criticality")
+                            if svc and crit:
+                                crit_dict[str(svc)] = str(crit)
+                elif isinstance(crit_data, dict):
+                    crit_dict = {str(k): str(v) for k, v in crit_data.items()}
+
+                return AIAnalysisResult(
+                    probable_cves=data.get("probable_cves", []),
+                    service_criticality=crit_dict,
+                    suggested_cli_commands=data.get("suggested_cli_commands", []),
+                    attack_vectors=data.get("attack_vectors", []),
+                )
             return None
 
         except Exception as e:

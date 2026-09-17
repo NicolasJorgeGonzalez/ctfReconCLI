@@ -18,7 +18,7 @@ from ctf_recon.models import (
 from ctf_recon.report.markdown_writer import export_report_to_markdown
 from ctf_recon.scanner.port_scanner import parse_ports, scan_ports
 from ctf_recon.scanner.web_triage import run_web_triage
-from ctf_recon.triage.ai_advisor import run_ai_advisor
+from ctf_recon.triage.ai_advisor import DEFAULT_MODEL, run_ai_advisor
 from ctf_recon.triage.flag_matcher import scan_target_for_flags
 
 console = Console()
@@ -249,10 +249,10 @@ def scan(
         envvar="GEMINI_API_KEY",
     ),
     model: str = typer.Option(
-        "gemini-2.5-flash",
+        DEFAULT_MODEL,
         "-m",
         "--model",
-        help="Gemini model name to use for AI triage (default: gemini-2.5-flash)"
+        help=f"Gemini model name to use for AI triage (default: {DEFAULT_MODEL})"
     ),
     output: str = typer.Option(
         "writeup_triage.md",
