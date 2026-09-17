@@ -32,10 +32,10 @@ This task list details the step-by-step implementation plan for building the `ct
 ---
 
 ## Task 4: Web Triage Scanner (`ctf_recon/scanner/web_triage.py`)
-- [ ] Implement HTTP/HTTPS probe for web ports (e.g., 80, 443, 8080, 8443, etc.).
-- [ ] Fetch key routes: `/`, `/robots.txt`, `/.git/HEAD`.
-- [ ] Extract headers (`Server`, `X-Powered-By`, custom headers) and check for redirects.
-- [ ] Handle SSL errors, connection timeouts, and HTTP errors gracefully using `httpx.AsyncClient`.
+- [x] Implement HTTP/HTTPS probe for web ports (e.g., 80, 443, 8080, 8443, etc.).
+- [x] Fetch key routes: `/`, `/robots.txt`, `/.git/HEAD`.
+- [x] Extract headers (`Server`, `X-Powered-By`, custom headers) and check for redirects.
+- [x] Handle SSL errors, connection timeouts, and HTTP errors gracefully using `httpx.AsyncClient`.
 
 ---
 
