@@ -54,9 +54,9 @@ This task list details the step-by-step implementation plan for building the `ct
 ---
 
 ## Task 7: Markdown Report Generator (`ctf_recon/report/markdown_writer.py`)
-- [ ] Design clean writeup Markdown template.
-- [ ] Export `TriageReport` to file (default `writeup_triage.md` or user `-o` argument).
-- [ ] Format tables for open ports, web findings, discovered flags/artefacts, and AI recommendations.
+- [x] Design clean writeup Markdown template.
+- [x] Export `TriageReport` to file (default `writeup_triage.md` or user `-o` argument).
+- [x] Format tables for open ports, web findings, discovered flags/artefacts, and AI recommendations.
 
 ---
 
