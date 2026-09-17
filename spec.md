@@ -17,6 +17,7 @@ Herramienta de línea de comandos en Python diseñada para automatizar la fase d
   - Flags opcionales:
     - `-p, --ports <RANGE>`: Rango de puertos (por defecto: top 100 puertos comunes o `1-1000`).
     - `--ai`: Activa el análisis táctico asistido por Gemini.
+    - `-m, --model <MODEL>`: Modelo de Gemini a utilizar (por defecto: `gemini-2.5-flash`).
     - `-o, --output <FILE>`: Exporta el reporte de triage a Markdown (por defecto: `writeup_triage.md`).
     - `--timeout <FLOAT>`: Timeout de conexión por puerto/petición en segundos (por defecto: `1.5`).
 
