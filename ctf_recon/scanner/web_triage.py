@@ -8,17 +8,31 @@ COMMON_WEB_PORTS: Set[int] = {
     80, 443, 8000, 8008, 8080, 8443, 8888, 5000, 3000, 9000, 8081, 9090
 }
 
+KNOWN_NON_WEB_PORTS: Set[int] = {
+    21, 22, 23, 25, 53, 110, 139, 143, 445, 3306, 5432, 6379, 27017
+}
+
 KEY_ROUTES: List[str] = ["/", "/robots.txt", "/.git/HEAD"]
 
 
-def is_candidate_web_port(port: int, banner: Optional[str] = None) -> bool:
+def is_candidate_web_port(
+    port: int,
+    banner: Optional[str] = None,
+    total_open_ports: Optional[int] = None
+) -> bool:
     """Checks if a port is likely hosting a web service based on port number or banner."""
     if port in COMMON_WEB_PORTS:
         return True
     if banner:
         lower_banner = banner.lower()
-        if any(keyword in lower_banner for keyword in ["http", "apache", "nginx", "html", "iis", "werkzeug", "uvicorn"]):
+        if any(proto in lower_banner for proto in ["ssh", "ftp", "smtp", "mysql", "postgresql", "redis"]):
+            return False
+        if any(keyword in lower_banner for keyword in ["http", "apache", "nginx", "html", "iis", "werkzeug", "uvicorn", "express"]):
             return True
+    if port in KNOWN_NON_WEB_PORTS:
+        return False
+    if total_open_ports is not None and total_open_ports <= 10:
+        return True
     return False
 
 
@@ -72,6 +86,11 @@ async def triage_web_endpoint(
                 if x_powered_by:
                     findings.append(f"X-Powered-By header: {x_powered_by}")
 
+                if root_res.text:
+                    from ctf_recon.triage.flag_matcher import find_flags_in_text
+                    for ff in find_flags_in_text(root_res.text, source=f"{base_url}/"):
+                        findings.append(f"Flag found in body: {ff.flag_text}")
+
             except (httpx.RequestError, httpx.TimeoutException, OSError):
                 # If HTTP failed on a non-standard port and we didn't try HTTPS yet, try HTTPS fallback
                 if scheme == "http" and use_ssl is None:
@@ -83,6 +102,10 @@ async def triage_web_endpoint(
                 robots_res = await client.get(f"{base_url}/robots.txt")
                 routes_checked.append("/robots.txt")
                 if robots_res.status_code == 200 and robots_res.text:
+                    from ctf_recon.triage.flag_matcher import find_flags_in_text
+                    for ff in find_flags_in_text(robots_res.text, source=f"{base_url}/robots.txt"):
+                        findings.append(f"Flag found in robots.txt: {ff.flag_text}")
+
                     disallowed = [
                         line.strip()
                         for line in robots_res.text.splitlines()
@@ -133,7 +156,7 @@ async def run_web_triage(
     """
     candidate_ports = [
         p.port for p in open_ports
-        if is_candidate_web_port(p.port, p.banner)
+        if is_candidate_web_port(p.port, p.banner, total_open_ports=len(open_ports))
     ]
 
     if not candidate_ports:

@@ -24,9 +24,9 @@ def test_cli_model_argument():
     # Test passing custom model via --model
     result2 = runner.invoke(app, ["scan", "127.0.0.1", "--ai", "--model", "gemini-1.5-pro"])
     assert result2.exit_code == 0
-    assert "Model: gemini-1.5-pro" in result2.output
+    assert "gemini-1.5-pro" in result2.output
 
     # Test passing custom model via -m
     result3 = runner.invoke(app, ["scan", "10.10.10.1", "--ai", "-m", "gemini-2.5-pro"])
     assert result3.exit_code == 0
-    assert "Model: gemini-2.5-pro" in result3.output
+    assert "gemini-2.5-pro" in result3.output

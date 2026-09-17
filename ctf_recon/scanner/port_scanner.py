@@ -60,16 +60,20 @@ async def _do_scan(target: str, port: int, timeout: float) -> Optional[PortScanR
 
     banner = None
     try:
+        # Check if service sends an immediate greeting (like SSH/FTP)
         try:
-            data = await asyncio.wait_for(reader.read(1024), timeout=0.2)
-            if data:
-                banner = data.decode('utf-8', errors='ignore').strip()
+            banner_bytes = await asyncio.wait_for(reader.read(1024), timeout=0.15)
         except asyncio.TimeoutError:
+            banner_bytes = None
+
+        if not banner_bytes:
+            # Send a basic probe for HTTP/web servers
             writer.write(b"HEAD / HTTP/1.0\r\n\r\n")
             await writer.drain()
-            data = await asyncio.wait_for(reader.read(1024), timeout=0.2)
-            if data:
-                banner = data.decode('utf-8', errors='ignore').strip()
+            banner_bytes = await asyncio.wait_for(reader.read(1024), timeout=0.5)
+
+        if banner_bytes:
+            banner = banner_bytes.decode("utf-8", errors="ignore").strip()
     except Exception:
         pass
     finally:

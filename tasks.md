@@ -61,15 +61,15 @@ This task list details the step-by-step implementation plan for building the `ct
 ---
 
 ## Task 8: CLI Interface & Rich Formatting (`ctf_recon/cli.py`)
-- [ ] Build `typer` app with `scan` command accepting:
+- [x] Build `typer` app with `scan` command accepting:
   - `TARGET` (required arg)
   - `-p, --ports` (default: `1-1000` or common top ports)
   - `--ai` (flag boolean)
   - `-m, --model` (default: `gemini-2.5-flash`)
   - `-o, --output` (default: `writeup_triage.md`)
   - `--timeout` (float, default: `1.5`)
-- [ ] Implement Rich UI components: spinners during port scan & web triage, formatted Rich tables for output, colorful alert panels for flags.
-- [ ] Implement clean `Ctrl+C` (`KeyboardInterrupt`) handling and error messages.
+- [x] Implement Rich UI components: spinners during port scan & web triage, formatted Rich tables for output, colorful alert panels for flags.
+- [x] Implement clean `Ctrl+C` (`KeyboardInterrupt`) handling and error messages.
 
 ---
 
@@ -78,4 +78,4 @@ This task list details the step-by-step implementation plan for building the `ct
 - [x] Unit tests for `web_triage` (using `httpx` mock / `respx`).
 - [x] Unit tests for `flag_matcher` with various regex pattern test cases and base64 strings.
 - [x] Unit tests for `ai_advisor` (mocking `google-genai` response).
-- [ ] Integration test for CLI `scan` command.
+- [x] Integration test for CLI `scan` command.
