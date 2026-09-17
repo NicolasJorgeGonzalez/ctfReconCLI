@@ -40,9 +40,9 @@ This task list details the step-by-step implementation plan for building the `ct
 ---
 
 ## Task 5: Flag & Blob Engine (`ctf_recon/triage/flag_matcher.py`)
-- [ ] Implement regex patterns for common CTF flags (`flag{...}`, `HTB{...}`, `THM{...}`, `CTF{...}`).
-- [ ] Implement Base64 detection regex and safe decoding logic to discover encoded flags/tokens in headers or body content.
-- [ ] Search within HTTP response bodies, response headers, and scanned banners.
+- [x] Implement regex patterns for common CTF flags (`flag{...}`, `HTB{...}`, `THM{...}`, `CTF{...}`).
+- [x] Implement Base64 detection regex and safe decoding logic to discover encoded flags/tokens in headers or body content.
+- [x] Search within HTTP response bodies, response headers, and scanned banners.
 
 ---
 
@@ -75,6 +75,6 @@ This task list details the step-by-step implementation plan for building the `ct
 ## Task 9: Unit Testing & Verification (`tests/`)
 - [ ] Unit tests for `port_scanner` (mocking socket connections).
 - [ ] Unit tests for `web_triage` (using `httpx` mock / `respx`).
-- [ ] Unit tests for `flag_matcher` with various regex pattern test cases and base64 strings.
+- [x] Unit tests for `flag_matcher` with various regex pattern test cases and base64 strings.
 - [ ] Unit tests for `ai_advisor` (mocking `google-genai` response).
 - [ ] Integration test for CLI `scan` command.
