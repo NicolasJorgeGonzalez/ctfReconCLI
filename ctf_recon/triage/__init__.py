@@ -9,6 +9,10 @@ from ctf_recon.triage.flag_matcher import (
     find_flags_in_headers,
     scan_target_for_flags,
 )
+from ctf_recon.triage.ai_advisor import (
+    AIAdvisor,
+    run_ai_advisor,
+)
 
 __all__ = [
     "COMMON_FLAG_REGEX",
@@ -20,4 +24,6 @@ __all__ = [
     "find_flags_in_text",
     "find_flags_in_headers",
     "scan_target_for_flags",
+    "AIAdvisor",
+    "run_ai_advisor",
 ]

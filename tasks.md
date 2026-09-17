@@ -47,9 +47,9 @@ This task list details the step-by-step implementation plan for building the `ct
 ---
 
 ## Task 6: Gemini AI Advisor (`ctf_recon/triage/ai_advisor.py`)
-- [ ] Implement `AIAdvisor` using official `google-genai` SDK and model `gemini-2.5-flash`.
-- [ ] Use Pydantic Structured Outputs (`response_schema` / structured format) to strictly format AI response into `AIAnalysisResult`.
-- [ ] Ensure offline graceful degradation: if `--ai` is not passed or `GEMINI_API_KEY` is missing/empty, return `None` or log warning without crashing.
+- [x] Implement `AIAdvisor` using official `google-genai` SDK and model `gemini-2.5-flash`.
+- [x] Use Pydantic Structured Outputs (`response_schema` / structured format) to strictly format AI response into `AIAnalysisResult`.
+- [x] Ensure offline graceful degradation: if `--ai` is not passed or `GEMINI_API_KEY` is missing/empty, return `None` or log warning without crashing.
 
 ---
 
@@ -73,8 +73,8 @@ This task list details the step-by-step implementation plan for building the `ct
 ---
 
 ## Task 9: Unit Testing & Verification (`tests/`)
-- [ ] Unit tests for `port_scanner` (mocking socket connections).
-- [ ] Unit tests for `web_triage` (using `httpx` mock / `respx`).
+- [x] Unit tests for `port_scanner` (mocking socket connections).
+- [x] Unit tests for `web_triage` (using `httpx` mock / `respx`).
 - [x] Unit tests for `flag_matcher` with various regex pattern test cases and base64 strings.
-- [ ] Unit tests for `ai_advisor` (mocking `google-genai` response).
+- [x] Unit tests for `ai_advisor` (mocking `google-genai` response).
 - [ ] Integration test for CLI `scan` command.
