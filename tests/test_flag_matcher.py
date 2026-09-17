@@ -32,6 +32,8 @@ class TestFlagMatcherDirect:
             ("solv: picoctf{pico_lowercase_flag}", "picoctf{pico_lowercase_flag}"),
             ("Chall: CTF{generic_jeopardy_flag}", "CTF{generic_jeopardy_flag}"),
             ("chall: ctf{generic_lowercase_flag}", "ctf{generic_lowercase_flag}"),
+            ("FaMAF CTF: FaMAF{br0k3n_4cc3ss_c0ntr0l_ch3ck_th3_0wn3r}", "FaMAF{br0k3n_4cc3ss_c0ntr0l_ch3ck_th3_0wn3r}"),
+            ("lowercase: famaf{famaf_lowercase_sample}", "famaf{famaf_lowercase_sample}"),
         ],
     )
     def test_flag_formats_detection(self, sample: str, expected_flag: str):

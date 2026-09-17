@@ -9,13 +9,14 @@ STANDARD_FLAG_PATTERNS: List[re.Pattern] = [
     re.compile(r"flag\{[^}]+\}", re.IGNORECASE),
     re.compile(r"htb\{[^}]+\}", re.IGNORECASE),
     re.compile(r"thm\{[^}]+\}", re.IGNORECASE),
+    re.compile(r"famaf\{[^}]+\}", re.IGNORECASE),
     re.compile(r"picoctf\{[^}]+\}", re.IGNORECASE),
     re.compile(r"(?<!pico)ctf\{[^}]+\}", re.IGNORECASE),
 ]
 
 # Combined regex pattern for fast single-pass matching of common flag formats
 COMMON_FLAG_REGEX: re.Pattern = re.compile(
-    r"(?:picoctf|(?<!pico)ctf|flag|htb|thm)\{[^}]+\}",
+    r"(?:picoctf|(?<!pico)ctf|flag|htb|thm|famaf)\{[^}]+\}",
     re.IGNORECASE
 )
 
