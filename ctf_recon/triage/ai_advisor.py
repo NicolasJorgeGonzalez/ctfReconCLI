@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import time
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
@@ -133,48 +134,91 @@ class AIAdvisor:
 
         prompt = self.build_prompt(target, open_ports, web_findings, flags_found)
 
-        try:
-            from google.genai import types
+        max_retries = 3
+        response = None
 
-            response = self.client.models.generate_content(
-                model=self.model_name,
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    response_schema=GeminiAnalysisSchema,
-                    automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
-                ),
-            )
+        for attempt in range(max_retries):
+            try:
+                from google.genai import types
 
-            if response and response.text:
-                try:
-                    data = json.loads(response.text)
-                except Exception:
-                    return None
-
-                crit_data = data.get("service_criticality", [])
-                crit_dict = {}
-                if isinstance(crit_data, list):
-                    for item in crit_data:
-                        if isinstance(item, dict):
-                            svc = item.get("service")
-                            crit = item.get("criticality")
-                            if svc and crit:
-                                crit_dict[str(svc)] = str(crit)
-                elif isinstance(crit_data, dict):
-                    crit_dict = {str(k): str(v) for k, v in crit_data.items()}
-
-                return AIAnalysisResult(
-                    probable_cves=data.get("probable_cves", []),
-                    service_criticality=crit_dict,
-                    suggested_cli_commands=data.get("suggested_cli_commands", []),
-                    attack_vectors=data.get("attack_vectors", []),
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(
+                        response_mime_type="application/json",
+                        response_schema=GeminiAnalysisSchema,
+                        automatic_function_calling=types.AutomaticFunctionCallingConfig(disable=True),
+                    ),
                 )
+                break
+            except Exception as e:
+                err_str = str(e)
+                if (
+                    ("503" in err_str or "UNAVAILABLE" in err_str or "high demand" in err_str.lower())
+                    and attempt < max_retries - 1
+                ):
+                    wait_sec = (attempt + 1) * 2
+                    logger.warning(
+                        f"Gemini API experiencing high demand (503). Retrying in {wait_sec}s (attempt {attempt + 1}/{max_retries})..."
+                    )
+                    time.sleep(wait_sec)
+                    continue
+
+                logger.warning(f"AI analysis failed or timed out: {e}")
+                return None
+
+        if not response:
+            logger.warning("Empty response received from Gemini API.")
             return None
 
-        except Exception as e:
-            logger.warning(f"AI analysis failed or timed out: {e}")
+        data = None
+        if hasattr(response, "parsed") and response.parsed is not None:
+            if isinstance(response.parsed, GeminiAnalysisSchema):
+                data = response.parsed.model_dump()
+            elif isinstance(response.parsed, dict):
+                data = response.parsed
+
+        if data is None and hasattr(response, "text") and response.text:
+            text = response.text.strip()
+            if text.startswith("```"):
+                lines = text.splitlines()
+                if lines and lines[0].startswith("```"):
+                    lines = lines[1:]
+                if lines and lines[-1].startswith("```"):
+                    lines = lines[:-1]
+                text = "\n".join(lines).strip()
+            try:
+                data = json.loads(text)
+            except Exception as parse_err:
+                logger.warning(
+                    f"Could not parse Gemini JSON response: {parse_err}. Response text: {response.text}"
+                )
+                return None
+
+        if not data or not isinstance(data, dict):
+            logger.warning("Gemini response did not contain expected dictionary data.")
             return None
+
+        crit_data = data.get("service_criticality", [])
+        crit_dict = {}
+        if isinstance(crit_data, list):
+            for item in crit_data:
+                if isinstance(item, dict):
+                    svc = item.get("service")
+                    crit = item.get("criticality")
+                    if svc and crit:
+                        crit_dict[str(svc)] = str(crit)
+                elif hasattr(item, "service") and hasattr(item, "criticality"):
+                    crit_dict[str(item.service)] = str(item.criticality)
+        elif isinstance(crit_data, dict):
+            crit_dict = {str(k): str(v) for k, v in crit_data.items()}
+
+        return AIAnalysisResult(
+            probable_cves=data.get("probable_cves", []),
+            service_criticality=crit_dict,
+            suggested_cli_commands=data.get("suggested_cli_commands", []),
+            attack_vectors=data.get("attack_vectors", []),
+        )
 
 
 def run_ai_advisor(

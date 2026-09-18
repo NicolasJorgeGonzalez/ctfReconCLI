@@ -109,6 +109,9 @@ Por defecto, el reporte se guarda en `writeup_triage.md`. Puedes personalizar la
 ctf-recon scan 10.10.10.10 -o reportes/maquina_htb.md
 ```
 
+> [!NOTE]
+> Puedes consultar un ejemplo completo de reporte generado con análisis táctico de IA en el archivo [`reporteCTF.md`](reporteCTF.md) incluido en la raíz de este repositorio.
+
 ### Ajustar el Timeout por Conexión
 ```bash
 ctf-recon scan 10.10.10.10 --timeout 2.5

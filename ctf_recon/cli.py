@@ -269,8 +269,8 @@ def scan(
     """
     Scans a target for open ports, web endpoints, CTF flags, and AI triage recommendations.
     """
-    # If the user explicitly provided an API key flag, activate AI analysis automatically
-    if key and not ai:
+    # If the user explicitly provided an API key flag or a custom model, activate AI analysis automatically
+    if (key or model != DEFAULT_MODEL) and not ai:
         ai = True
 
     try:
