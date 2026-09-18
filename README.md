@@ -158,9 +158,8 @@ pytest -v
 ```text
 ctfReconCLI/
 ├── pyproject.toml              # Definición del paquete y dependencias
-├── spec.md                     # Especificación técnica original
-├── tasks.md                    # Roadmap de tareas implementadas
 ├── README.md                   # Documentación de uso e instalación
+├── reporteCTF.md               # Ejemplo de reporte de triage generado
 ├── ctf_recon/
 │   ├── __init__.py             # Inicialización y exportación de modelos
 │   ├── cli.py                  # Interfaz CLI con Typer y Rich
